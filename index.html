@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gửi Em Yêu - Mùa Trăng Tròn</title>
+  <!-- Favicon hình lồng đèn hoặc bánh trung thu -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏮</text></svg>">
   <!-- Google Fonts & Confetti -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -266,8 +268,8 @@
 
   <!-- Nhạc nền Lofi -->
   <audio id="bgMusic" loop>
-    <source src="https://assets.mixkit.co/music/preview/mixkit-silent-night-starry-sky-lo-fi-1168.mp3" type="audio/mpeg" />
-  </audio>
+    <source src="./music.mp3" type="audio/mpeg" />
+    </audio>
 
   <script>
     // ==========================================
@@ -315,36 +317,45 @@ Yêu em nhiều hơn mọi vầng trăng trên đời.`;
 
     // Thuật toán tọa độ Trái Tim (Parametric Heart Equation)
     function buildHeartGallery() {
-      const centerX = heartCanvas.clientWidth / 2;
-      const centerY = heartCanvas.clientHeight / 2 - 15;
-      const scale = 10.5; // Độ mở rộng của trái tim
+    const width = heartCanvas.clientWidth || 360;
+    const height = heartCanvas.clientHeight || 380;
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-      for (let i = 0; i < TOTAL_IMAGES; i++) {
-        // Chia đều góc t từ 0 đến 2*PI
+    // Tỉ lệ co giãn phù hợp với màn hình mobile và desktop
+    const scale = width < 400 ? 10 : 12; 
+
+    heartCanvas.innerHTML = '';
+
+    for (let i = 0; i < TOTAL_IMAGES; i++) {
+        // Góc t chạy từ 0 đến 2*PI
         const t = (Math.PI * 2 * i) / TOTAL_IMAGES;
         
-        // Công thức hình trái tim toán học
+        // Tọa độ X chuẩn
         const x = 16 * Math.pow(Math.sin(t), 3);
-        const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+        
+        // ĐÃ TINH CHỈNH: Giảm độ lõm giữa từ 13 xuống 11 và chỉnh hệ số cos để hai tai trái tim tròn đều
+        const y = -(11 * Math.cos(t) - 4.5 * Math.cos(2 * t) - 1.8 * Math.cos(3 * t) - Math.cos(4 * t));
 
-        const posX = centerX + x * scale - 27; // Trừ nửa width ảnh (54/2)
+        // Ảnh có kích thước 54px nên trừ 27px để tâm ảnh trùng đúng đường cong
+        const posX = centerX + x * scale - 27;
         const posY = centerY + y * scale - 27;
 
         const img = document.createElement('img');
         img.className = 'heart-photo';
-        img.src = `${IMAGE_FOLDER}${i + 1}.jpg`;
         img.style.left = `${posX}px`;
         img.style.top = `${posY}px`;
-        img.style.animationDelay = `${(i * 0.15).toFixed(2)}s`;
+        img.style.animationDelay = `${(i * 0.12).toFixed(2)}s`;
 
-        // Bấm vào ảnh nhỏ sẽ phóng to toàn màn hình
+        loadImageWithFallback(img, i + 1);
+
         img.addEventListener('click', () => {
-          modalImg.src = img.src;
-          photoModal.style.display = 'flex';
+        modalImg.src = img.src;
+        photoModal.style.display = 'flex';
         });
 
         heartCanvas.appendChild(img);
-      }
+    }
     }
 
     // Đóng popup xem ảnh
