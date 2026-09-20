@@ -465,47 +465,36 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
       temp.src = path;
     }
 
-    // Bảng 30 toạ độ chuẩn đối xứng từng cặp (X, Y)
-// Đỉnh tim uốn lượn chữ V nông mềm mại, không bao giờ bị tụt hay dồn ảnh ở rãnh
-const HEART_COORDS_30 = [
-  // 1. Điểm chóp đáy duy nhất (Index 0)
-  {x:  0.0, y: 17.5},
-
-  // 2. Cánh phải đi ngược lên đỉnh (14 điểm)
-  {x:  1.6, y: 15.3},
-  {x:  3.6, y: 13.0},
-  {x:  5.9, y: 10.7},
-  {x:  8.4, y:  8.3},
-  {x: 10.9, y:  5.7},
-  {x: 13.2, y:  2.8},
-  {x: 14.8, y: -0.3},
-  {x: 15.4, y: -3.5},
-  {x: 14.7, y: -6.6},
-  {x: 12.8, y: -9.2},
-  {x: 10.2, y: -10.5},
-  {x:  7.2, y: -10.3},
-  {x:  4.4, y: -8.7},
-  {x:  2.2, y: -6.2}, // Mép hõm trên bên phải (đủ cao và thoáng)
-
-  // 3. Mép hõm trên bên trái đối xứng (Index 15)
-  {x: -2.2, y: -6.2}, // Mép hõm trên bên trái
-
-  // 4. Cánh trái đi xuôi xuống lại đáy (14 điểm đối xứng gương)
-  {x: -4.4, y: -8.7},
-  {x: -7.2, y: -10.3},
-  {x: -10.2, y: -10.5},
-  {x: -12.8, y: -9.2},
-  {x: -14.7, y: -6.6},
-  {x: -15.4, y: -3.5},
-  {x: -14.8, y: -0.3},
-  {x: -13.2, y:  2.8},
-  {x: -10.9, y:  5.7},
-  {x:  -8.4, y:  8.3},
-  {x:  -5.9, y: 10.7},
-  {x:  -3.6, y: 13.0},
-  {x:  -1.6, y: 15.3},
-  {x:  -0.5, y: 16.8}  // Vuốt êm vào chóp đáy
+ // Bảng 30 toạ độ chia đều tuyệt đối: 15 điểm cánh phải + 15 điểm cánh trái đối xứng gương
+// Đảm bảo không bao giờ đè ảnh ở đáy hay hõm trên đỉnh
+const RIGHT_HALF = [
+  {x:  0.0, y: 17.0}, // Điểm chốt đáy
+  {x:  1.6, y: 14.7},
+  {x:  3.4, y: 12.3},
+  {x:  5.4, y:  9.8},
+  {x:  7.6, y:  7.3},
+  {x:  9.9, y:  4.6},
+  {x: 12.2, y:  1.8},
+  {x: 14.1, y: -1.2},
+  {x: 15.1, y: -4.3},
+  {x: 14.6, y: -7.3},
+  {x: 12.7, y: -9.7},
+  {x:  9.9, y:-10.7},
+  {x:  6.9, y:-10.2},
+  {x:  4.2, y: -8.4},
+  {x:  2.0, y: -5.8}  // Điểm hõm trên bên phải
 ];
+
+// Tự động tạo nửa trái bằng cách lấy đối xứng gương: x thành -x
+const LEFT_HALF = RIGHT_HALF.slice().reverse().map(pt => ({
+  x: -pt.x,
+  y: pt.y
+}));
+
+// Ghép lại thành đúng 30 điểm khép kín một vòng tròn hoàn mỹ
+const HEART_COORDS_30 = RIGHT_HALF.concat(LEFT_HALF);
+
+
     const heartCanvas = document.getElementById('heartCanvas');
     const photoModal = document.getElementById('photoModal');
     const modalImg = document.getElementById('modalImg');
