@@ -217,10 +217,10 @@
     }
 
     .heart-photo:hover, .heart-photo:active {
-      transform: scale(1.8) !important;
-      z-index: 100 !important;
-      box-shadow: 0 0 25px rgba(253, 224, 71, 1), 0 0 45px rgba(244, 114, 182, 1);
-      border-color: #fde047;
+    transform: scale(2.2) !important;
+    z-index: 100 !important;
+    box-shadow: 0 0 20px rgba(253, 224, 71, 1), 0 0 35px rgba(244, 114, 182, 1);
+    border-color: #fde047;
     }
 
     /* Popup phóng to ảnh */
@@ -433,35 +433,37 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
     const modalImg = document.getElementById('modalImg');
 
     function buildHeartGallery() {
-      const containerWidth = heartCanvas.clientWidth || window.innerWidth;
-      const containerHeight = heartCanvas.clientHeight || 380;
-      const centerX = containerWidth / 2;
-      const centerY = containerHeight / 2 - 8;
+    const containerWidth = heartCanvas.clientWidth || window.innerWidth;
+    const containerHeight = heartCanvas.clientHeight || 420;
+    const centerX = containerWidth / 2;
+    const centerY = containerHeight / 2 - 12;
 
-      let photoSize = 50;
-      let scale = 11.2;
+    // Tự động tính kích cỡ ảnh và độ rộng trái tim cho đúng 30 tấm
+    let photoSize = 38;
+    let scale = 11.8;
 
-      if (containerWidth < 360) {
+    if (containerWidth < 360) {
+        photoSize = 28;
+        scale = 8.5;
+    } else if (containerWidth < 430) {
+        photoSize = 32;
+        scale = 10.0;
+    } else if (containerWidth < 500) {
         photoSize = 36;
-        scale = 7.6;
-      } else if (containerWidth < 430) {
-        photoSize = 44;
-        scale = 9.2;
-      } else if (containerWidth < 500) {
-        photoSize = 48;
-        scale = 10.4;
-      }
+        scale = 11.2;
+    }
 
-      heartCanvas.style.setProperty('--photo-size', `${photoSize}px`);
-      heartCanvas.innerHTML = '';
-      const halfSize = photoSize / 2;
+    heartCanvas.style.setProperty('--photo-size', `${photoSize}px`);
+    heartCanvas.innerHTML = '';
+    const halfSize = photoSize / 2;
 
-      for (let i = 0; i < TOTAL_IMAGES; i++) {
+    for (let i = 0; i < TOTAL_IMAGES; i++) {
+        // Góc t chạy đều 360 độ quanh đường cong
         const t = (Math.PI * 2 * i) / TOTAL_IMAGES;
-        
-        // Phương trình trái tim tinh chỉnh độ phồng đều
+
+        // Phương trình trái tim tối ưu cho chu vi 30 điểm (tai nở tròn, không tụt sâu)
         const x = 16 * Math.pow(Math.sin(t), 3);
-        const y = -(11 * Math.cos(t) - 4.5 * Math.cos(2 * t) - 1.8 * Math.cos(3 * t) - Math.cos(4 * t));
+        const y = -(12 * Math.cos(t) - 4.8 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
 
         const posX = centerX + x * scale - halfSize;
         const posY = centerY + y * scale - halfSize;
@@ -470,18 +472,20 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
         img.className = 'heart-photo';
         img.style.left = `${posX}px`;
         img.style.top = `${posY}px`;
-        img.style.animationDelay = `${(i * 0.1).toFixed(2)}s`;
+        
+        // Tạo nhịp chớp nhẹ so le cho lung linh
+        img.style.animationDelay = `${(i * 0.08).toFixed(2)}s`;
 
         loadImageSmart(img, i + 1);
 
         img.addEventListener('click', (e) => {
-          e.stopPropagation();
-          modalImg.src = img.src;
-          photoModal.style.display = 'flex';
+        e.stopPropagation();
+        modalImg.src = img.src;
+        photoModal.style.display = 'flex';
         });
 
         heartCanvas.appendChild(img);
-      }
+    }
     }
 
     photoModal.addEventListener('click', () => {
