@@ -228,6 +228,73 @@
       font-size: 0.85rem;
       cursor: pointer;
     }
+    /* Card nội dung tự ôm gọn màn hình */
+.main-wrapper {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 480px); /* Tối đa 92% chiều rộng màn hình, không bao giờ tràn */
+  margin-top: 24px;
+  padding: clamp(16px, 5vw, 30px); /* Tự co giãn padding theo màn hình */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(1.4rem, 5vw, 1.8rem); /* Chữ tự nhỏ lại trên máy nhỏ */
+  font-weight: 700;
+  color: var(--accent-yellow);
+  margin-bottom: 8px;
+}
+
+.letter-content {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(1.2rem, 4.5vw, 1.45rem);
+  line-height: 1.65;
+  color: #fff1f2;
+  white-space: pre-wrap;
+}
+
+/* Vùng chứa trái tim: tự động vuông theo màn hình */
+.heart-section {
+  display: none;
+  position: relative;
+  z-index: 2;
+  width: 100vw;
+  max-width: 500px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.heart-canvas {
+  position: relative;
+  width: 100%;
+  height: min(90vw, 440px); /* Chiều cao tự cân bằng theo chiều rộng màn hình */
+  margin: 0 auto;
+}
+
+/* Kích thước ảnh linh hoạt bằng biến CSS */
+.heart-photo {
+  position: absolute;
+  width: var(--photo-size, 46px);
+  height: var(--photo-size, 46px);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 10px rgba(244, 114, 182, 0.7);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, z-index 0.3s;
+}
+
+.heart-photo:hover, .heart-photo:active {
+  transform: scale(1.6) !important;
+  z-index: 99 !important;
+  box-shadow: 0 0 20px rgba(253, 224, 71, 1);
+}
   </style>
 </head>
 <body>
@@ -317,46 +384,66 @@ Yêu em nhiều hơn mọi vầng trăng trên đời.`;
 
     // Thuật toán tọa độ Trái Tim (Parametric Heart Equation)
     function buildHeartGallery() {
-    const width = heartCanvas.clientWidth || 360;
-    const height = heartCanvas.clientHeight || 380;
-    const centerX = width / 2;
-    const centerY = height / 2;
+  const containerWidth = heartCanvas.clientWidth || window.innerWidth;
+  const containerHeight = heartCanvas.clientHeight || 380;
+  const centerX = containerWidth / 2;
+  const centerY = containerHeight / 2 - 10;
 
-    // Tỉ lệ co giãn phù hợp với màn hình mobile và desktop
-    const scale = width < 400 ? 10 : 12; 
+  // Tính đường kính ảnh và hệ số phóng đại (scale) theo kích thước màn hình
+  // Màn hình càng nhỏ, ảnh và trái tim tự co nhỏ tương ứng
+  let photoSize = 52;
+  let scale = 11.5;
 
-    heartCanvas.innerHTML = '';
+  if (containerWidth < 360) {
+    photoSize = 38;
+    scale = 7.5;
+  } else if (containerWidth < 420) {
+    photoSize = 44;
+    scale = 9.2;
+  } else if (containerWidth < 500) {
+    photoSize = 48;
+    scale = 10.5;
+  }
 
-    for (let i = 0; i < TOTAL_IMAGES; i++) {
-        // Góc t chạy từ 0 đến 2*PI
-        const t = (Math.PI * 2 * i) / TOTAL_IMAGES;
-        
-        // Tọa độ X chuẩn
-        const x = 16 * Math.pow(Math.sin(t), 3);
-        
-        // ĐÃ TINH CHỈNH: Giảm độ lõm giữa từ 13 xuống 11 và chỉnh hệ số cos để hai tai trái tim tròn đều
-        const y = -(11 * Math.cos(t) - 4.5 * Math.cos(2 * t) - 1.8 * Math.cos(3 * t) - Math.cos(4 * t));
+  // Cập nhật biến kích thước ảnh vào CSS
+  heartCanvas.style.setProperty('--photo-size', `${photoSize}px`);
+  heartCanvas.innerHTML = '';
 
-        // Ảnh có kích thước 54px nên trừ 27px để tâm ảnh trùng đúng đường cong
-        const posX = centerX + x * scale - 27;
-        const posY = centerY + y * scale - 27;
+  const halfSize = photoSize / 2;
 
-        const img = document.createElement('img');
-        img.className = 'heart-photo';
-        img.style.left = `${posX}px`;
-        img.style.top = `${posY}px`;
-        img.style.animationDelay = `${(i * 0.12).toFixed(2)}s`;
+  for (let i = 0; i < TOTAL_IMAGES; i++) {
+    const t = (Math.PI * 2 * i) / TOTAL_IMAGES;
 
-        loadImageWithFallback(img, i + 1);
+    // Tọa độ toán học trái tim (đã tinh chỉnh tai trái tim phồng đều)
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y = -(11 * Math.cos(t) - 4.5 * Math.cos(2 * t) - 1.8 * Math.cos(3 * t) - Math.cos(4 * t));
 
-        img.addEventListener('click', () => {
-        modalImg.src = img.src;
-        photoModal.style.display = 'flex';
-        });
+    const posX = centerX + x * scale - halfSize;
+    const posY = centerY + y * scale - halfSize;
 
-        heartCanvas.appendChild(img);
-    }
-    }
+    const img = document.createElement('img');
+    img.className = 'heart-photo';
+    img.style.left = `${posX}px`;
+    img.style.top = `${posY}px`;
+    img.style.animationDelay = `${(i * 0.12).toFixed(2)}s`;
+
+    loadImageWithFallback(img, i + 1);
+
+    img.addEventListener('click', () => {
+      modalImg.src = img.src;
+      photoModal.style.display = 'flex';
+    });
+
+    heartCanvas.appendChild(img);
+  }
+}
+
+// Tự động vẽ lại chuẩn xác nếu người dùng đổi kích thước hoặc xoay ngang màn hình
+window.addEventListener('resize', () => {
+  if (isOpened) {
+    buildHeartGallery();
+  }
+});
 
     // Đóng popup xem ảnh
     photoModal.addEventListener('click', () => {
