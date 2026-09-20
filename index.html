@@ -91,7 +91,7 @@
     .main-wrapper {
       position: relative;
       z-index: 2;
-      width: min(92vw, 480px);
+      width: min(92vw, 680px);
       margin-top: 110px;
       padding: clamp(20px, 5vw, 32px);
       background: var(--card-bg);
@@ -175,7 +175,7 @@
       position: relative;
       z-index: 2;
       width: 100vw;
-      max-width: 520px;
+      max-width: 680px;
       margin-top: 35px;
       text-align: center;
     }
@@ -191,7 +191,7 @@
     .heart-canvas {
       position: relative;
       width: 100%;
-      height: min(92vw, 440px);
+      height: min(85vw, 460px);
       margin: 0 auto;
       animation: heartbeat 2.8s infinite ease-in-out;
     }
@@ -472,40 +472,53 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
     const modalClose = document.getElementById('modalClose');
 
     function buildHeartGallery() {
-      const containerWidth = heartCanvas.clientWidth || window.innerWidth;
-      const containerHeight = heartCanvas.clientHeight || 420;
-      const centerX = containerWidth / 2;
-      const centerY = containerHeight / 2 - 15;
+    const containerWidth = heartCanvas.clientWidth || window.innerWidth;
+    const containerHeight = heartCanvas.clientHeight || 460;
+    const centerX = containerWidth / 2;
+    const centerY = containerHeight / 2 - 10;
 
-      // Tính toán kích thước theo khung nhìn
-      let photoSize = 34;
-      let scale = 11.2;
+    // Tự cân đối size ảnh và độ bung tim theo laptop / mobile
+    let photoSize = 38;
+    let scale = 12.5;
 
-      if (containerWidth < 360) {
+    if (containerWidth < 360) {
         photoSize = 26;
-        scale = 8.0;
-      } else if (containerWidth < 430) {
+        scale = 8.2;
+    } else if (containerWidth < 430) {
         photoSize = 30;
-        scale = 9.4;
-      } else if (containerWidth < 500) {
-        photoSize = 32;
-        scale = 10.5;
-      }
+        scale = 9.8;
+    } else if (containerWidth < 600) {
+        photoSize = 34;
+        scale = 11.2;
+    }
 
-      heartCanvas.style.setProperty('--photo-size', `${photoSize}px`);
-      heartCanvas.innerHTML = '';
-      const halfSize = photoSize / 2;
+    heartCanvas.style.setProperty('--photo-size', `${photoSize}px`);
+    heartCanvas.innerHTML = '';
+    const halfSize = photoSize / 2;
 
-      for (let i = 0; i < TOTAL_IMAGES; i++) {
-        // Lệch pha góc +0.5 để các ảnh ở 2 bên đáy không bị dồn cục vào 1 điểm zero
-        const t = (Math.PI * 2 * (i + 0.5)) / TOTAL_IMAGES;
+    for (let i = 0; i < TOTAL_IMAGES; i++) {
+        // Góc t chạy đều quanh trái tim
+        const t = (Math.PI * 2 * i) / TOTAL_IMAGES;
 
+        // 1. Trục hoành X
         const x = 16 * Math.pow(Math.sin(t), 3);
-        let y = -(12 * Math.cos(t) - 4.8 * Math.cos(2 * t) - 1.8 * Math.cos(3 * t) - Math.cos(4 * t));
 
-        // Kéo thon trục Y khi gần chóp nhọn phía dưới để tạo khoảng cách đều đặn
-        if (y > 6) {
-          y += (y - 6) * 0.2;
+        // 2. Trục tung Y: Giảm hệ số cos(t) từ 12 xuống 10 để ĐỈNH TIM KHÔNG BỊ TỤT SÂU
+        let y = -(10 * Math.cos(t) - 4.2 * Math.cos(2 * t) - 1.4 * Math.cos(3 * t) - 0.6 * Math.cos(4 * t));
+
+        // 3. XỬ LÝ ĐỈNH TIM (Hõm giữa): Nâng ảnh lên nhẹ, giữ form chữ V nông duyên dáng
+        if (Math.abs(x) < 3.5 && y < 0) {
+        y += 1.6; // Đẩy ảnh lên trên để không rơi vào lòng tim
+        }
+
+        // 4. XỬ LÝ ĐÁY TIM (Chóp nhọn): Tách 2 ảnh kề đáy ra xa nhau, không cho đè chùm
+        if (y > 5.5) {
+        // Giãn trục Y xuôi xuống dưới
+        y += (y - 5.5) * 0.25;
+        // Nếu 2 ảnh quá sát trục trung tâm (x gần 0), đẩy nhẹ sang 2 bên
+        if (Math.abs(x) < 2.5) {
+            y += 0.8;
+        }
         }
 
         const posX = centerX + x * scale - halfSize;
@@ -515,18 +528,18 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
         img.className = 'heart-photo';
         img.style.left = `${posX}px`;
         img.style.top = `${posY}px`;
-        img.style.animationDelay = `${(i * 0.08).toFixed(2)}s`;
+        img.style.animationDelay = `${(i * 0.07).toFixed(2)}s`;
 
         loadImageSmart(img, i + 1);
 
         img.addEventListener('click', (e) => {
-          e.stopPropagation();
-          modalImg.src = img.src;
-          photoModal.style.display = 'flex';
+        e.stopPropagation();
+        modalImg.src = img.src;
+        photoModal.style.display = 'flex';
         });
 
         heartCanvas.appendChild(img);
-      }
+    }
     }
 
     photoModal.addEventListener('click', () => { photoModal.style.display = 'none'; });
