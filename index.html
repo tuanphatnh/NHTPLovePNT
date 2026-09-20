@@ -169,7 +169,7 @@
       white-space: pre-wrap;
     }
 
-    /* Trái tim ảnh */
+    /* VÙNG TRÁI TIM ẢNH VIP */
     .heart-section {
       display: none;
       position: relative;
@@ -206,8 +206,8 @@
 
     .heart-photo {
       position: absolute;
-      width: var(--photo-size, 36px);
-      height: var(--photo-size, 36px);
+      width: var(--photo-size, 34px);
+      height: var(--photo-size, 34px);
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid rgba(255, 255, 255, 0.95);
@@ -219,7 +219,7 @@
     .heart-photo:hover, .heart-photo:active {
       transform: scale(2.2) !important;
       z-index: 100 !important;
-      box-shadow: 0 0 25px rgba(253, 224, 71, 1), 0 0 45px rgba(244, 114, 182, 1);
+      box-shadow: 0 0 20px rgba(253, 224, 71, 1), 0 0 35px rgba(244, 114, 182, 1);
       border-color: #fde047;
     }
 
@@ -296,7 +296,7 @@
       transform: translateY(-2px);
     }
 
-    /* Đèn trời bay */
+    /* Đèn lồng bay */
     .sky-lantern {
       position: fixed;
       bottom: -60px;
@@ -317,7 +317,7 @@
       100% { transform: translateY(-115vh) rotate(15deg); opacity: 0; }
     }
 
-    /* Tim bay khi click màn hình */
+    /* Tim bay khi chạm màn hình */
     .floating-heart {
       position: fixed;
       font-size: 1.5rem;
@@ -333,11 +333,14 @@
 </head>
 <body>
 
+  <!-- Bầu trời sao -->
   <canvas id="starCanvas"></canvas>
 
+  <!-- Trăng rằm & Đếm ngày yêu -->
   <div class="moon"></div>
   <div class="love-days-badge" id="loveCounter">Đang đếm yêu thương...</div>
 
+  <!-- Khung nội dung chính -->
   <div class="main-wrapper">
     <h1 class="title">Trung Thu Đoàn Viên 🌕</h1>
     <p class="subtitle">Đêm nay trăng sáng nhất trời, nhưng người rạng rỡ nhất đời là em...</p>
@@ -347,20 +350,24 @@
       <p class="tap-hint" id="hintText">Chạm vào chiếc bánh để mở điều bất ngờ ✨</p>
     </div>
 
+    <!-- Bức thư gõ tay -->
     <div class="letter-box" id="letterBox">
       <div class="letter-content" id="typewriterText"></div>
     </div>
 
+    <!-- Bật/tắt nhạc -->
     <button class="music-btn" id="audioToggle">
       <span id="musicIcon">🎵</span> <span id="musicText">Bật nhạc nền</span>
     </button>
   </div>
 
+  <!-- Vùng trái tim ảnh -->
   <div class="heart-section" id="heartSection">
     <p class="heart-title">💖 Những Khoảnh Khắc Của Đôi Mình 💖</p>
     <div class="heart-canvas" id="heartCanvas"></div>
   </div>
 
+  <!-- Popup ảnh lớn -->
   <div class="modal" id="photoModal">
     <div class="modal-content">
       <span class="modal-close" id="modalClose">✕</span>
@@ -368,6 +375,7 @@
     </div>
   </div>
 
+  <!-- File nhạc nền trong repo -->
   <audio id="bgMusic" loop preload="auto">
     <source src="./music.mp3" type="audio/mpeg" />
   </audio>
@@ -378,11 +386,11 @@
 
     const message = 
 `Gửi người anh thương nhất,\n
-Người ta thường ngắm trăng rằm tháng Tám vì trăng tròn và sáng nhất năm. Nhưng đối với anh, từ ngày có em bước vào cuộc đời, ngày nào lòng anh cũng bình yên và trọn vẹn như đêm trăng tròn.\n
-Cảm ơn em vì đã luôn dịu dàng, luôn đồng hành và là nụ cười ấm áp nhất của anh. Chúc em yêu một mùa Trung thu thật ngọt ngào, hạnh phúc và mãi luôn rạng rỡ khi bên anh! ❤️\n
+Người ta thường ngắm trăng rằm tháng Tám vì trăng tròn và sáng nhất năm. Nhưng đối với anh, từ ngày có em bước vào cuộc đời, ngày nào lòng anh cũng bình yên và trọn vẹn như đêm hội trăng tròn.\n
+Cảm ơn em vì đã luôn dịu dàng, luôn đồng hành và là nụ cười ấm áp nhất của anh. Chúc em yêu một mùa Trung thu thật ngọt ngào, hạnh phúc và mãi luôn rạng rỡ khi bên anh nhé! ❤️\n
 Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
 
-    // 1. Đếm ngày yêu
+    // 1. Tính số ngày yêu
     function updateLoveDays() {
       const start = new Date(START_DATE).getTime();
       const now = new Date().getTime();
@@ -391,7 +399,7 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
     }
     updateLoveDays();
 
-    // 2. Bầu trời sao Canvas
+    // 2. Hiệu ứng Canvas Bầu Trời Sao Lấp Lánh
     const canvas = document.getElementById('starCanvas');
     const ctx = canvas.getContext('2d');
     let stars = [];
@@ -428,7 +436,7 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
     }
     drawStars();
 
-    // 3. Đèn lồng bay
+    // 3. Tự động thả đèn lồng bay lên trời
     function spawnLantern() {
       const lantern = document.createElement('div');
       lantern.className = 'sky-lantern';
@@ -440,7 +448,7 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
     }
     setInterval(spawnLantern, 2500);
 
-    // 4. Load ảnh đa định dạng
+    // 4. Cơ chế load ảnh bắt mọi loại đuôi file
     const EXTENSIONS = ['jpg', 'png', 'jpeg', 'JPG', 'PNG', 'webp'];
     function loadImageSmart(imgElement, baseIndex, extIndex = 0) {
       if (extIndex >= EXTENSIONS.length) {
@@ -457,7 +465,7 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
       temp.src = path;
     }
 
-    // 5. Thuật toán xếp 30 ảnh thành trái tim hoàn chỉnh (Không đè đáy)
+    // 5. Thuật toán xếp ảnh thành Trái Tim hoàn hảo (Không đè đáy hay tai)
     const heartCanvas = document.getElementById('heartCanvas');
     const photoModal = document.getElementById('photoModal');
     const modalImg = document.getElementById('modalImg');
@@ -469,17 +477,18 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
       const centerX = containerWidth / 2;
       const centerY = containerHeight / 2 - 15;
 
-      let photoSize = 36;
+      // Tính toán kích thước theo khung nhìn
+      let photoSize = 34;
       let scale = 11.2;
 
       if (containerWidth < 360) {
-        photoSize = 28;
+        photoSize = 26;
         scale = 8.0;
       } else if (containerWidth < 430) {
-        photoSize = 32;
+        photoSize = 30;
         scale = 9.4;
       } else if (containerWidth < 500) {
-        photoSize = 34;
+        photoSize = 32;
         scale = 10.5;
       }
 
@@ -488,15 +497,15 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
       const halfSize = photoSize / 2;
 
       for (let i = 0; i < TOTAL_IMAGES; i++) {
-        // Phân bổ đều pha góc
+        // Lệch pha góc +0.5 để các ảnh ở 2 bên đáy không bị dồn cục vào 1 điểm zero
         const t = (Math.PI * 2 * (i + 0.5)) / TOTAL_IMAGES;
 
         const x = 16 * Math.pow(Math.sin(t), 3);
         let y = -(12 * Math.cos(t) - 4.8 * Math.cos(2 * t) - 1.8 * Math.cos(3 * t) - Math.cos(4 * t));
 
-        // Tách giãn khoảng cách chóp nhọn phía dưới để không bị đè
-        if (y > 6.5) {
-          y += (y - 6.5) * 0.22;
+        // Kéo thon trục Y khi gần chóp nhọn phía dưới để tạo khoảng cách đều đặn
+        if (y > 6) {
+          y += (y - 6) * 0.2;
         }
 
         const posX = centerX + x * scale - halfSize;
@@ -520,19 +529,18 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
       }
     }
 
-    // Đóng Modal ảnh
     photoModal.addEventListener('click', () => { photoModal.style.display = 'none'; });
     modalClose.addEventListener('click', (e) => {
       e.stopPropagation();
       photoModal.style.display = 'none';
     });
 
-    // 6. Hiệu ứng Typewriter
+    // 6. Hiệu ứng gõ thư Typewriter
     const typewriterText = document.getElementById('typewriterText');
     function runTypewriter(text, index = 0) {
       if (index < text.length) {
         typewriterText.innerHTML += text.charAt(index) === '\n' ? '<br>' : text.charAt(index);
-        setTimeout(() => runTypewriter(text, index + 1), 32);
+        setTimeout(() => runTypewriter(text, index + 1), 30);
       }
     }
 
@@ -573,7 +581,7 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
       }, 1200);
     });
 
-    // Nút Bật/Tắt Nhạc
+    // Nút tắt/bật nhạc
     audioToggle.addEventListener('click', () => {
       if (bgMusic.paused) {
         bgMusic.play();
@@ -586,14 +594,13 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
       }
     });
 
-    // Tự căn chỉnh khi xoay màn hình
+    // Tự căn chỉnh lại nếu xoay màn hình
     window.addEventListener('resize', () => {
       if (isOpened) buildHeartGallery();
     });
 
-    // NÂNG CẤP: Hiệu ứng chạm đâu bung tim đấy trên màn hình
+    // Hiệu ứng chạm màn hình bung tim phát sáng
     document.addEventListener('pointerdown', (e) => {
-      // Không tạo tim khi click vào nút hoặc ảnh
       if (e.target.closest('#openGiftBtn, .heart-photo, .music-btn, #photoModal')) return;
       const heart = document.createElement('div');
       heart.className = 'floating-heart';
