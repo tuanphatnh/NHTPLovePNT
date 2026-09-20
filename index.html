@@ -436,21 +436,61 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
     const containerWidth = heartCanvas.clientWidth || window.innerWidth;
     const containerHeight = heartCanvas.clientHeight || 420;
     const centerX = containerWidth / 2;
-    const centerY = containerHeight / 2 - 12;
+    const centerY = containerHeight / 2 - 15;
 
-    // Tự động tính kích cỡ ảnh và độ rộng trái tim cho đúng 30 tấm
-    let photoSize = 38;
-    let scale = 11.8;
+    // Tính kích thước ảnh & tỉ lệ scale tương ứng màn hình
+    let photoSize = 36;
+    let scale = 11.5;
 
     if (containerWidth < 360) {
         photoSize = 28;
-        scale = 8.5;
+        scale = 8.2;
     } else if (containerWidth < 430) {
         photoSize = 32;
-        scale = 10.0;
+        scale = 9.6;
     } else if (containerWidth < 500) {
-        photoSize = 36;
-        scale = 11.2;
+        photoSize = 34;
+        scale = 10.8;
+    }
+
+    heartCanvas.style.setProperty('--photo-size', `${photoSize}px`);
+    heartCanvas.innerHTML = '';
+    const halfSize = photoSize / 2;
+
+    for (let i = 0; i < TOTAL_IMAGES; i++) {
+        // Thêm + 0.5 để phá vỡ đối xứng chết ở đáy, phân bổ đều 2 bên nhánh
+        const t = (Math.PI * 2 * (i + 0.5)) / TOTAL_IMAGES;
+
+        // Tọa độ X
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        
+        // Tọa độ Y cải tiến: làm cong mềm tai tim và vuốt thon đuôi
+        let y = -(12 * Math.cos(t) - 4.8 * Math.cos(2 * t) - 1.8 * Math.cos(3 * t) - Math.cos(4 * t));
+
+        // Nếu ảnh đang ở vùng chóp nhọn đáy (y > 6), giãn nhẹ trục Y xuống để các ảnh tách rời nhau, không chồng lấn
+        if (y > 6) {
+        y += (y - 6) * 0.18;
+        }
+
+        const posX = centerX + x * scale - halfSize;
+        const posY = centerY + y * scale - halfSize;
+
+        const img = document.createElement('img');
+        img.className = 'heart-photo';
+        img.style.left = `${posX}px`;
+        img.style.top = `${posY}px`;
+        img.style.animationDelay = `${(i * 0.08).toFixed(2)}s`;
+
+        loadImageSmart(img, i + 1);
+
+        img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modalImg.src = img.src;
+        photoModal.style.display = 'flex';
+        });
+
+        heartCanvas.appendChild(img);
+    }
     }
 
     heartCanvas.style.setProperty('--photo-size', `${photoSize}px`);
