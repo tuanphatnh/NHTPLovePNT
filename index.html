@@ -468,68 +468,69 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
     // 5. Bảng 30 toạ độ vector (X, Y) chuẩn xác tuyệt đối từng điểm
     // Giữ hõm trên thành đường lượn chữ V nông và chóp đáy vuốt đều không chồng đè
     const HEART_COORDS_30 = [
-      {x: 0.0,  y: -5.0},
-      {x: 2.3,  y: -7.6},
-      {x: 5.2,  y: -9.6},
-      {x: 8.5,  y: -10.5},
-      {x: 11.6, y: -9.8},
-      {x: 14.2, y: -7.5},
-      {x: 15.6, y: -4.4},
-      {x: 15.5, y: -1.0},
-      {x: 14.1, y: 2.3},
-      {x: 11.8, y: 5.4},
-      {x: 9.0,  y: 8.3},
-      {x: 6.0,  y: 11.0},
-      {x: 3.2,  y: 13.5},
-      {x: 1.1,  y: 15.8},
-      {x: 0.0,  y: 18.0}, // Điểm chóp đáy duy nhất
-      {x: -1.1,  y: 15.8},
-      {x: -3.2,  y: 13.5},
-      {x: -6.0,  y: 11.0},
-      {x: -9.0,  y: 8.3},
-      {x: -11.8, y: 5.4},
-      {x: -14.1, y: 2.3},
-      {x: -15.5, y: -1.0},
-      {x: -15.6, y: -4.4},
-      {x: -14.2, y: -7.5},
-      {x: -11.6, y: -9.8},
-      {x: -8.5,  y: -10.5},
-      {x: -5.2,  y: -9.6},
-      {x: -2.3,  y: -7.6},
-      {x: -0.9,  y: -5.8},
-      {x:  0.9,  y: -5.8}
-    ];
-
+  // Hõm giữa sang cánh phải (đã nới rộng x để không dính nhau)
+  {x:  1.3, y: -5.4},
+  {x:  3.6, y: -7.5},
+  {x:  6.4, y: -9.2},
+  {x:  9.4, y: -9.8},
+  {x: 12.2, y: -8.8},
+  {x: 14.5, y: -6.5},
+  {x: 15.6, y: -3.4},
+  {x: 15.4, y:  0.0},
+  {x: 13.9, y:  3.3},
+  {x: 11.6, y:  6.4},
+  {x:  8.9, y:  9.3},
+  {x:  6.1, y: 12.0},
+  {x:  3.5, y: 14.4},
+  {x:  1.3, y: 16.6},
+  
+  // Điểm chóp đáy duy nhất
+  {x:  0.0, y: 18.5},
+  
+  // Đáy đi ngược lên cánh trái
+  {x: -1.3, y: 16.6},
+  {x: -3.5, y: 14.4},
+  {x: -6.1, y: 12.0},
+  {x: -8.9, y:  9.3},
+  {x: -11.6, y:  6.4},
+  {x: -13.9, y:  3.3},
+  {x: -15.4, y:  0.0},
+  {x: -15.6, y: -3.4},
+  {x: -14.5, y: -6.5},
+  {x: -12.2, y: -8.8},
+  {x: -9.4, y: -9.8},
+  {x: -6.4, y: -9.2},
+  {x: -3.6, y: -7.5},
+  
+  // Hõm giữa bên trái (nới nhẹ để tách đều với điểm đầu tiên)
+  {x: -1.3, y: -5.4},
+  
+  // Điểm đệm cân bằng hai tai
+  {x:  0.0, y: -6.6}
+];
     const heartCanvas = document.getElementById('heartCanvas');
     const photoModal = document.getElementById('photoModal');
     const modalImg = document.getElementById('modalImg');
     const modalClose = document.getElementById('modalClose');
 
     function buildHeartGallery() {
-      const containerWidth = heartCanvas.clientWidth || window.innerWidth;
-      const containerHeight = heartCanvas.clientHeight || 460;
-      const centerX = containerWidth / 2;
-      const centerY = containerHeight / 2 - 20;
+    // Lấy chiều rộng khả dụng thực tế của màn hình
+    const screenWidth = Math.min(window.innerWidth, heartCanvas.clientWidth || window.innerWidth);
+    
+    // TÍNH TOÁN LIÊN TỤC THEO MÀN HÌNH (AUTOFIT TUYỆT ĐỐI)
+    // Màn hình nhỏ (360px) -> size ~26px, scale ~8.5
+    // Màn hình laptop (800px+) -> size ~36px, scale ~12.5
+    const photoSize = Math.max(25, Math.min(36, Math.floor(screenWidth * 0.075)));
+    const scale = Math.max(8.0, Math.min(12.5, screenWidth * 0.026));
 
-      let photoSize = 36;
-      let scale = 11.5;
+    const centerX = (heartCanvas.clientWidth || screenWidth) / 2;
+    const centerY = ((heartCanvas.clientHeight || 460) / 2) - 15;
 
-      if (containerWidth < 360) {
-        photoSize = 25;
-        scale = 7.8;
-      } else if (containerWidth < 430) {
-        photoSize = 29;
-        scale = 9.2;
-      } else if (containerWidth < 650) {
-        photoSize = 33;
-        scale = 10.5;
-      }
+    heartCanvas.style.setProperty('--photo-size', `${photoSize}px`);
+    heartCanvas.innerHTML = '';
+    const halfSize = photoSize / 2;
 
-      heartCanvas.style.setProperty('--photo-size', `${photoSize}px`);
-      heartCanvas.innerHTML = '';
-      const halfSize = photoSize / 2;
-
-      for (let i = 0; i < TOTAL_IMAGES; i++) {
+    for (let i = 0; i < TOTAL_IMAGES; i++) {
         const pt = HEART_COORDS_30[i];
 
         const posX = centerX + pt.x * scale - halfSize;
@@ -544,13 +545,13 @@ Yêu em nhiều hơn tất cả các vì sao trên bầu trời đêm nay.`;
         loadImageSmart(img, i + 1);
 
         img.addEventListener('click', (e) => {
-          e.stopPropagation();
-          modalImg.src = img.src;
-          photoModal.style.display = 'flex';
+        e.stopPropagation();
+        modalImg.src = img.src;
+        photoModal.style.display = 'flex';
         });
 
         heartCanvas.appendChild(img);
-      }
+    }
     }
 
     photoModal.addEventListener('click', () => { photoModal.style.display = 'none'; });
